@@ -9,20 +9,29 @@ namespace Sol_Demo
     {
         private static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
-            // Step 1: Input
-            ElectricityUnitModel electricityUnitModel = new ElectricityUnitModel()
+            try
             {
-                Unit = 200
-            };
+                Console.WriteLine("Hello World!");
 
-            // Step 2 : surcharge Calculation
-            ElectricitySurchargeModel electricitySurchargeModel = await new SurchargeCalculationContext().GetSurchargeCalculationAsync(electricityUnitModel);
+                // Step 1: Input
+                ElectricityUnitModel electricityUnitModel = new ElectricityUnitModel()
+                {
+                    Unit = 200
+                };
 
-            // Step 3: Display surchare Calculation
-            Console.WriteLine($"Unit : {electricityUnitModel?.Unit}");
-            Console.WriteLine($"Surcharge Amount : {electricitySurchargeModel?.SurchargeAmount}");
+                SurchargeCalculationContext surchargeCalculationContext = new SurchargeCalculationContext();
+
+                // Step 2 : surcharge Calculation
+                ElectricitySurchargeModel electricitySurchargeModel = await surchargeCalculationContext.GetSurchargeCalculationAsync(electricityUnitModel);
+
+                // Step 3: Display surchare Calculation
+                Console.WriteLine($"Unit : {electricityUnitModel?.Unit}");
+                Console.WriteLine($"Surcharge Amount : {electricitySurchargeModel?.SurchargeAmount}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
