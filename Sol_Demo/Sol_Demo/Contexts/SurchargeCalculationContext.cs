@@ -15,18 +15,22 @@ namespace Sol_Demo.Contexts
         private readonly ConcurrentDictionary<Predicate<ElectricityUnitModel>, IUnitSurchargeCalculation> keyValuePairsUnit
             = new ConcurrentDictionary<Predicate<ElectricityUnitModel>, IUnitSurchargeCalculation>();
 
-        public SurchargeCalculationContext() => this.SetUnitRulesAsync();
+        // Using GetAwaiter().GetResult Method
+        //public SurchargeCalculationContext() => this.SetUnitRulesAsync().GetAwaiter().GetResult();
+
+        // Or
+
+        // Using Task.WaitAll
+        public SurchargeCalculationContext() => Task.WaitAll(this.SetUnitRulesAsync());
 
         private Task SetUnitRulesAsync()
         {
-            Task.Run(() =>
+            return Task.Run(() =>
             {
                 keyValuePairsUnit.TryAdd((electricityUnitModel) => electricityUnitModel.Unit <= 199, new Upto199UnitStrategy());
                 keyValuePairsUnit.TryAdd((electricityUnitModel) => electricityUnitModel.Unit >= 200 && electricityUnitModel.Unit < 400, new Unit200To400UnitStrategy());
                 keyValuePairsUnit.TryAdd((electricityUnitModel) => electricityUnitModel.Unit >= 400, new Above400UnitStrategy());
             });
-
-            return Task.CompletedTask;
         }
 
         public async Task<ElectricitySurchargeModel> GetSurchargeCalculationAsync(ElectricityUnitModel electricityUnitModel)
